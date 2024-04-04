@@ -14,6 +14,7 @@ type FormValue = {
   phPhone: {
     number: string;
   }[];
+  DOB: Number;
 };
 
 const youtubeform = () => {
@@ -29,18 +30,38 @@ const youtubeform = () => {
       phone: ["", ""],
       phPhone: [{ number: "" }],
       age: 0,
+      DOB: new Date(),
     },
   });
-  const { register, control, handleSubmit, formState } = form;
-  const { errors } = formState;
+  const { register, control, handleSubmit, formState, setValue, watch } = form;
+  const {
+    errors,
+    dirtyFields,
+    touchedFields,
+    isDirty,
+    isValid,
+    isSubmitting,
+    isSubmitted,
+  } = formState;
+  console.log(dirtyFields, touchedFields, isDirty, isValid);
+  console.log({isSubmitted, isSubmitting})
+
   const { fields, append, remove } = useFieldArray({
     name: "phPhone",
     control,
   });
-
+  const handleClick = () => {
+    setValue("username", "", {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true,
+    });
+  };
+  // const watchUsername = watch("username");
   const onSubmit = (data: FormValue) => {
     console.log("form submitted", data);
   };
+
   return (
     <div className="form-control">
       <h1>WELCOME</h1>
@@ -97,6 +118,7 @@ const youtubeform = () => {
           type="text"
           id="Twitter"
           {...register("socials.Twitter", {
+            disabled: watch("channel") === "",
             required: {
               value: true,
               message: "required",
@@ -164,7 +186,23 @@ const youtubeform = () => {
         />
         <p className="error">{errors.age?.message}</p>
 
-        <button>Submit</button>
+        <label htmlFor="DOB">Date of Birth</label>
+        <input
+          type="Date"
+          id="DOB"
+          {...register("DOB", {
+            valueAsDate: true,
+            required: {
+              value: true,
+              message: "Date is required",
+            },
+          })}
+        />
+        <p className="error">{errors.DOB?.message}</p>
+
+        <button onClick={() => handleClick()}>SetValue</button>
+
+        <button disabled={!isDirty || !isValid || !isSubmitting}>Submit</button>
       </form>
       <DevTool control={control} />
     </div>
