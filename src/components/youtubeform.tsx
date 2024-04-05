@@ -32,6 +32,7 @@ const youtubeform = () => {
       age: 0,
       DOB: new Date(),
     },
+    mode: "onTouched",
   });
   const { register, control, handleSubmit, formState, setValue, watch } = form;
   const {
@@ -95,6 +96,13 @@ const youtubeform = () => {
                   fieldValue !== "admin@example.com" ||
                   "Enter a Different Email"
                 );
+              },
+              emailAvailable: async (fieldValue) => {
+                const response = await fetch(
+                  `https://jsonplaceholder.typicode.com/users?email=${fieldValue}`
+                );
+                const data = await response.json();
+                return data.length === 0 || "Email already exists";
               },
             },
           })}
